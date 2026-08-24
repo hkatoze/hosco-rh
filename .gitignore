@@ -1,0 +1,23 @@
+node_modules/
+dist/
+build/
+
+# Documents déposés (stockage local de dev, jamais versionné)
+server/.donnees/
+
+.env
+.env.local
+.env.*.local
+.env.prod
+
+# Sauvegardes locales (contiennent des données RH réelles)
+/sauvegardes/
+
+*.log
+npm-debug.log*
+
+.DS_Store
+Thumbs.db
+
+.vscode/
+.idea/

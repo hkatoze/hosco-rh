@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #racine {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-fond-page text-texte-fort font-sans font-normal antialiased;
+  }
+
+  /* Le focus clavier reste toujours visible : jamais d'outline supprimé. */
+  :focus-visible {
+    outline: 2px solid theme("colors.primaire");
+    outline-offset: 1px;
+  }
+}

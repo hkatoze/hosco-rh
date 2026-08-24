@@ -1,0 +1,39 @@
+{
+  "name": "@hosco-personnel/server",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "seed": "tsx prisma/seed.ts",
+    "admin:creer": "tsx prisma/creerAdmin.ts",
+    "dev": "tsx watch src/server.ts",
+    "test": "vitest run",
+    "maintenance:coherence-documents": "tsx src/tasks/coherenceDocuments.ts",
+    "maintenance:purge-corbeille": "tsx src/tasks/purgeCorbeille.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.2",
+    "@prisma/client": "^5.20.0",
+    "argon2": "^0.41.1",
+    "busboy": "^1.6.0",
+    "dotenv": "^16.4.5",
+    "exceljs": "^4.4.0",
+    "hono": "^4.6.9",
+    "sharp": "^0.33.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/busboy": "^1.5.4",
+    "@types/node": "^22.7.0",
+    "prisma": "^5.20.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.9"
+  }
+}

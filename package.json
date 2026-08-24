@@ -1,0 +1,23 @@
+{
+  "name": "hosco-personnel",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "server",
+    "web"
+  ],
+  "scripts": {
+    "prisma:generate": "npm run prisma:generate -w server",
+    "prisma:migrate": "npm run prisma:migrate -w server",
+    "prisma:studio": "npm run prisma:studio -w server",
+    "seed": "npm run seed -w server"
+  },
+  "allowScripts": {
+    "@prisma/client@5.22.0": true,
+    "@prisma/engines@5.22.0": true,
+    "argon2@0.41.1": true,
+    "prisma@5.22.0": true,
+    "sharp@0.33.5": true,
+    "esbuild@0.21.5": true
+  }
+}

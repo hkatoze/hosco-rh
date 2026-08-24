@@ -1,0 +1,62 @@
+# Compose de production : base de données + application + reverse proxy.
+# Usage :
+#   cp docker/.env.prod.example docker/.env.prod   # puis compléter
+#   docker compose -f docker/docker-compose.prod.yml --env-file docker/.env.prod up -d --build
+#
+# Contrairement à docker-compose.yml (dev), postgres n'expose aucun port
+# sur l'hôte et adminer est absent : seul Caddy est joignable depuis le
+# réseau local.
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-hosco}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?définir POSTGRES_PASSWORD dans .env.prod}
+      POSTGRES_DB: ${POSTGRES_DB:-hosco_personnel}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-hosco} -d ${POSTGRES_DB:-hosco_personnel}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-hosco}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-hosco_personnel}?schema=public
+      PORT: 3000
+      # HTTP simple sur le réseau interne (voir Caddyfile) : un cookie Secure
+      # serait refusé par le navigateur sans TLS.
+      COOKIE_SECURE: "false"
+      ORIGINE_ATTENDUE: ${ORIGINE_ATTENDUE:?définir ORIGINE_ATTENDUE dans .env.prod}
+      DOCUMENTS_RACINE: /donnees/documents
+    volumes:
+      - documents_data:/donnees/documents
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  documents_data:
+  caddy_data:
+  caddy_config:

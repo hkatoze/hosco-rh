@@ -1,0 +1,219 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Sexe {
+  MASCULIN
+  FEMININ
+}
+
+enum TypeMouvement {
+  RECRUTEMENT
+  CONGE
+  SUSPENSION
+  FIN_SUSPENSION
+  DEMISSION
+  LICENCIEMENT
+  RETRAITE
+  DECES
+}
+
+enum TypeDocument {
+  CV
+  DIPLOME
+  CONTRAT
+  CNIB
+  ACTE_NAISSANCE
+  CERTIFICAT_MEDICAL
+  AUTRE
+}
+
+enum RoleUtilisateur {
+  LECTURE
+  SAISIE
+  ADMIN
+}
+
+enum TypeContrat {
+  CDI
+  CDD
+  STAGE
+  VACATAIRE
+}
+
+enum SituationMatrimoniale {
+  CELIBATAIRE
+  MARIE
+  DIVORCE
+  VEUF
+}
+
+model Service {
+  id    String  @id @default(uuid())
+  nom   String
+  code  String  @unique
+  actif Boolean @default(true)
+
+  agents Agent[]
+}
+
+model Agent {
+  id                    String                 @id @default(uuid())
+  matricule             String                 @unique
+  nom                   String
+  prenom                String
+  sexe                  Sexe
+  dateNaissance         DateTime?              @db.Date
+  lieuNaissance         String?
+  situationMatrimoniale SituationMatrimoniale?
+  telephone             String?
+  adresse               String?
+  numeroCnss            String?
+  fonction              String
+  dateRecrutement       DateTime               @db.Date
+  typeContrat           TypeContrat
+  photoPath             String?
+  serviceId             String
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+  // Suppression douce (ex: fiche créée par erreur) : l'agent disparaît de
+  // l'annuaire et de la recherche, la ligne et son historique (mouvements,
+  // documents) restent en base — jamais de suppression définitive, même
+  // règle de principe que pour les documents (voir CLAUDE.md).
+  supprimeLe    DateTime?
+  supprimeParId String?
+
+  service     Service      @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  mouvements  Mouvement[]
+  documents   Document[]
+  supprimePar Utilisateur? @relation(fields: [supprimeParId], references: [id], onDelete: Restrict)
+
+  // Recherche par nom/prénom (annuaire) et filtre par service
+  @@index([nom, prenom])
+  @@index([serviceId])
+}
+
+model Mouvement {
+  id         String        @id @default(uuid())
+  agentId    String
+  type       TypeMouvement
+  dateEffet  DateTime      @db.Date
+  dateFin    DateTime?     @db.Date
+  motif      String?
+  documentId String?
+  saisiParId String
+  createdAt  DateTime      @default(now())
+
+  // Un mouvement ne se supprime jamais et ne se modifie jamais (voir
+  // CLAUDE.md) : l'annulation est une annotation append-only, pas une
+  // réécriture des champs ci-dessus. statutAgent() et la vue SQL ignorent
+  // tout mouvement annulé (annuleLe non nul), comme s'il n'existait pas.
+  annuleLe        DateTime?
+  annuleParId     String?
+  motifAnnulation String?
+
+  agent     Agent        @relation(fields: [agentId], references: [id], onDelete: Restrict)
+  document  Document?    @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  saisiPar  Utilisateur  @relation("MouvementsSaisis", fields: [saisiParId], references: [id], onDelete: Restrict)
+  annulePar Utilisateur? @relation("MouvementsAnnules", fields: [annuleParId], references: [id], onDelete: Restrict)
+
+  // Historique d'un agent trié par date, et calcul du statut courant
+  // (dernier mouvement par agentId)
+  @@index([agentId, dateEffet])
+  // Un document peut justifier plusieurs mouvements : plus de contrainte unique,
+  // mais l'index reste nécessaire (Postgres n'indexe pas les FK automatiquement).
+  @@index([documentId])
+}
+
+model Document {
+  id            String       @id @default(uuid())
+  agentId       String
+  type          TypeDocument
+  nomOrigine    String
+  // Chemin relatif à DOCUMENTS_RACINE. Pointe vers la corbeille après
+  // suppression (cheminFichier est mis à jour au moment du déplacement).
+  cheminFichier String
+  tailleOctets  Int
+  mimeType      String
+  deposeParId   String
+  createdAt     DateTime     @default(now())
+
+  // Suppression douce : le fichier part en corbeille, la ligne reste
+  // (voir DELETE /api/documents/:id). Un diplôme scanné supprimé par
+  // erreur peut être l'unique exemplaire numérique existant.
+  supprimeLe    DateTime?
+  supprimeParId String?
+
+  agent       Agent        @relation(fields: [agentId], references: [id], onDelete: Restrict)
+  deposePar   Utilisateur  @relation("DocumentsDeposes", fields: [deposeParId], references: [id], onDelete: Restrict)
+  supprimePar Utilisateur? @relation("DocumentsSupprimes", fields: [supprimeParId], references: [id], onDelete: Restrict)
+  mouvements  Mouvement[]
+
+  @@index([agentId])
+}
+
+model Utilisateur {
+  id                    String          @id @default(uuid())
+  identifiant           String          @unique
+  nom                   String
+  motDePasseHash        String
+  role                  RoleUtilisateur
+  actif                 Boolean         @default(true)
+  doitChangerMotDePasse Boolean         @default(true)
+  dernierAcces          DateTime?
+  createdAt             DateTime        @default(now())
+
+  mouvementsSaisis   Mouvement[] @relation("MouvementsSaisis")
+  mouvementsAnnules  Mouvement[] @relation("MouvementsAnnules")
+  documentsDeposes   Document[]  @relation("DocumentsDeposes")
+  documentsSupprimes Document[]  @relation("DocumentsSupprimes")
+  agentsSupprimes    Agent[]
+  journalEntries     Journal[]
+  sessions           Session[]
+}
+
+model Session {
+  id               String   @id @default(uuid())
+  tokenHash        String   @unique
+  utilisateurId    String
+  expireLe         DateTime
+  derniereActivite DateTime @default(now())
+  adresseIp        String?
+  userAgent        String?
+  createdAt        DateTime @default(now())
+
+  // Contrairement aux autres relations vers Utilisateur, Cascade est
+  // volontaire ici : une session est éphémère, pas une donnée d'audit à
+  // préserver comme le Journal ou l'historique des mouvements.
+  utilisateur Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+
+  // Nettoyage périodique des sessions expirées
+  @@index([expireLe])
+}
+
+model Journal {
+  id            String   @id @default(uuid())
+  // Nullable : une tentative de connexion avec un identifiant inconnu ne
+  // correspond à aucun Utilisateur existant, mais doit tout de même être
+  // journalisée (CONNEXION_ECHEC / BLOCAGE_TENTATIVES). L'identifiant tenté
+  // est alors conservé dans `detail`.
+  utilisateurId String?
+  action        String
+  cibleType     String
+  cibleId       String?
+  detail        Json?
+  adresseIp     String?
+  createdAt     DateTime @default(now())
+
+  utilisateur Utilisateur? @relation(fields: [utilisateurId], references: [id], onDelete: Restrict)
+
+  // Journal chronologique (audit) et recherche par entité ciblée
+  @@index([createdAt])
+  @@index([cibleType, cibleId])
+}

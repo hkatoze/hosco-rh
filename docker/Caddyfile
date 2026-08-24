@@ -1,0 +1,24 @@
+# Reverse proxy pour ZAKA RH sur le réseau local de l'hôpital.
+#
+# HTTP simple, pas de TLS : réseau interne fermé, accès uniquement depuis
+# les postes du service RH via l'IP du serveur — décision du 2026-08-24
+# pour éviter d'avoir à distribuer un certificat sur chaque poste. `:80`
+# écoute sur toutes les interfaces, donc l'IP suffit côté client, aucune
+# adresse à configurer ici.
+#
+# Revenir au HTTPS (tls internal) nécessiterait aussi de repasser
+# COOKIE_SECURE=true côté app (docker-compose.prod.yml) — les deux vont
+# toujours ensemble.
+
+:80 {
+	encode gzip
+
+	reverse_proxy app:3000
+
+	log {
+		output file /data/acces.log {
+			roll_size 10mb
+			roll_keep 5
+		}
+	}
+}
