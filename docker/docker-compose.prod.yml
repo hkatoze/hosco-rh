@@ -46,7 +46,10 @@ services:
     image: caddy:2-alpine
     restart: unless-stopped
     ports:
-      - "80:80"
+      # 8080 côté hôte : le port 80 est bloqué par une réservation Windows
+      # administrée sur le serveur de déploiement (Hyper-V/WSL2) — voir
+      # `netsh interface ipv4 show excludedportrange protocol=tcp`.
+      - "8080:80"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
