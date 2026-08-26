@@ -13,24 +13,27 @@ export default {
     extend: {
       colors: {
         primaire: "#A32D2D",
-        // Thème sombre sitewide (décision du 2026-08-21) : anciennement
-        // réservé à l'écran de connexion, généralisé à toute l'application.
+        // Thème clair chaud (décision du 2026-08-26, retour sur le thème
+        // sombre sitewide du 2026-08-21) : mêmes tons crème/brun que le
+        // thème sombre, inversés — le rouge de marque ne change pas.
+        // Contrastes vérifiés ≥4.5:1 (texte) / ≥3:1 (bordures) sur les
+        // fonds correspondants.
         texte: {
-          fort: "#F7F3EC",
-          faible: "#C6B9A8",
+          fort: "#241E17",
+          faible: "#6B5D4A",
         },
-        bordure: "#4E4030",
+        bordure: "#C9B896",
         statut: {
-          // Éclaircis par rapport à la palette claire d'origine pour rester
-          // lisibles (contraste) sur fond sombre.
-          vert: "#7FBF3E",
-          ambre: "#E0A339",
-          gris: "#A79C8E",
+          // Assombris par rapport à la palette sombre précédente pour
+          // rester lisibles (contraste) sur fond clair.
+          vert: "#3F7A1F",
+          ambre: "#965F10",
+          gris: "#726657",
           rouge: "#A32D2D",
         },
         fond: {
-          page: "#241E17",
-          carte: "#332A20",
+          page: "#F7F3EC",
+          carte: "#FFFFFF",
         },
       },
       fontFamily: {
@@ -46,12 +49,13 @@ export default {
       },
       boxShadow: {
         // Ombre courante pour les cartes/panneaux (fond-carte) partout dans
-        // l'application.
-        carte: "0 12px 30px -10px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,0,0,0.25)",
+        // l'application. Teinte brune (pas noire) et opacité réduite pour un
+        // rendu doux sur fond clair.
+        carte: "0 12px 30px -10px rgba(36,30,23,0.16), 0 0 0 1px rgba(36,30,23,0.05)",
         // Ombre plus marquée, réservée aux écrans d'authentification
         // (connexion, changement de mot de passe) pour un effet "carte
         // flottante" plus prononcé.
-        connexion: "0 30px 80px -20px rgba(0,0,0,0.65), 0 0 0 1px rgba(163,45,45,0.18)",
+        connexion: "0 30px 80px -20px rgba(36,30,23,0.28), 0 0 0 1px rgba(163,45,45,0.15)",
       },
     },
   },

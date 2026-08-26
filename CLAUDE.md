@@ -126,11 +126,11 @@ Filtrer des listes d'agents et les exporter en Excel.
 Voir les maquettes fournies (captures d'écran du 2026-08-20, non
 présentes dans ce dépôt — à redemander si besoin de les revoir).
 
-Thème sombre sur l'ensemble du logiciel, pas seulement l'écran de
-connexion (décision du 2026-08-21 : l'exception initialement limitée à
-`/connexion` a été généralisée à toute l'application sur demande
-explicite — même palette, même branding partout). Le thème clair
-d'origine (2026-08-20) a été abandonné, pas gardé en option.
+Thème clair chaud sur l'ensemble du logiciel (décision du 2026-08-26,
+retour sur le thème sombre généralisé du 2026-08-21 : essayé, jugé
+toujours trop sombre après un premier éclaircissement). Un seul thème
+pour toute l'application, pas de bascule clair/sombre proposée à
+l'utilisateur.
 
 Règles strictes :
 - `border-radius: 0` partout. Aucun angle arrondi.
@@ -142,12 +142,12 @@ Règles strictes :
   (panneaux, tableaux, modales, cartes d'authentification) portent une
   vraie ombre portée (`shadow-carte`, ou `shadow-connexion` pour les
   écrans de connexion/changement de mot de passe — effet plus marqué).
-- Couleur principale : #A32D2D (inchangée). Fond de page #241E17, fond
-  de carte #332A20. Texte #F7F3EC (fort) / #C6B9A8 (faible). Bordures
-  #4E4030.
-- Statuts (éclaircis par rapport à la palette claire d'origine pour
-  rester lisibles sur fond sombre) : vert #7FBF3E, ambre #E0A339,
-  gris #A79C8E, rouge #A32D2D.
+- Couleur principale : #A32D2D (inchangée depuis l'origine). Fond de
+  page #F7F3EC, fond de carte #FFFFFF. Texte #241E17 (fort) / #6B5D4A
+  (faible). Bordures #C9B896.
+- Statuts (assombris par rapport à la palette sombre précédente pour
+  rester lisibles sur fond clair) : vert #3F7A1F, ambre #965F10,
+  gris #726657, rouge #A32D2D.
 - Police Inter, deux graisses seulement : 400 et 500.
 - Toutes les couleurs et ombres dans un seul fichier de tokens
   Tailwind (`web/tailwind.config.ts`), changeables en un endroit —

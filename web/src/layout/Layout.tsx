@@ -5,6 +5,7 @@ import { apiFetch } from "../api/client";
 import type { Anomalie } from "../api/types";
 import { useSession } from "../hooks/useSession";
 import { Pastille } from "../components/Badge";
+import { MOTIF_POINTS } from "../lib/motifs";
 
 const LIENS = [
   { chemin: "/", libelle: "Tableau de bord", Icone: LayoutDashboard },
@@ -14,8 +15,10 @@ const LIENS = [
 ] as const;
 
 const CLASSE_LIEN = ({ isActive }: { isActive: boolean }) =>
-  `flex items-center gap-3 border px-4 py-3 text-base ${
-    isActive ? "border-primaire font-medium text-primaire" : "border-transparent text-texte-fort hover:border-bordure"
+  `flex items-center gap-3 border-l-4 px-4 py-3 text-base transition-colors ${
+    isActive
+      ? "border-primaire bg-primaire/10 font-medium text-primaire"
+      : "border-transparent text-texte-faible hover:border-bordure hover:bg-bordure/15 hover:text-texte-fort"
   }`;
 
 export function Layout() {
@@ -59,24 +62,29 @@ export function Layout() {
       </header>
 
       <div className="flex min-h-0 flex-1">
-        <nav className="flex w-barreLaterale shrink-0 flex-col justify-between overflow-y-auto border-r border-bordure bg-fond-carte">
-          <ul className="flex flex-col gap-2 p-4">
-            {LIENS.map((lien) => (
-              <li key={lien.chemin}>
-                <NavLink to={lien.chemin} end={lien.chemin === "/"} className={CLASSE_LIEN}>
-                  <span className="flex flex-1 items-center gap-3">
-                    <lien.Icone className="h-5 w-5" aria-hidden="true" />
-                    {lien.libelle}
-                  </span>
-                  {lien.chemin === "/anomalies" && anomalies && anomalies.length > 0 && (
-                    <Pastille>{anomalies.length}</Pastille>
-                  )}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
+        <nav
+          className="flex w-barreLaterale shrink-0 flex-col justify-between overflow-y-auto border-r border-bordure bg-fond-carte shadow-carte"
+          style={{ backgroundImage: MOTIF_POINTS, backgroundRepeat: "repeat" }}
+        >
+          <div className="flex flex-col p-4">
+            <ul className="flex flex-col gap-1">
+              {LIENS.map((lien) => (
+                <li key={lien.chemin}>
+                  <NavLink to={lien.chemin} end={lien.chemin === "/"} className={CLASSE_LIEN}>
+                    <span className="flex flex-1 items-center gap-3">
+                      <lien.Icone className="h-5 w-5" aria-hidden="true" />
+                      {lien.libelle}
+                    </span>
+                    {lien.chemin === "/anomalies" && anomalies && anomalies.length > 0 && (
+                      <Pastille>{anomalies.length}</Pastille>
+                    )}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          <ul className="flex flex-col gap-2 border-t border-bordure p-4">
+          <ul className="flex flex-col gap-1 border-t border-bordure p-4">
             <li>
               <NavLink to="/parametres" className={CLASSE_LIEN}>
                 <Settings className="h-5 w-5" aria-hidden="true" />

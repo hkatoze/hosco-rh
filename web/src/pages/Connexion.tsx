@@ -6,11 +6,12 @@ import type { UtilisateurConnecte } from "../api/types";
 import { Champ } from "../components/Champ";
 import { Bouton } from "../components/Bouton";
 import { CitationRotative } from "./CitationRotative";
+import { MOTIF_POINTS } from "../lib/motifs";
 
-// Motif de points décoratif (image SVG, pas un dégradé CSS). Très discret
-// sur fond sombre, aplat de couleur uniquement — voir CLAUDE.md.
-const MOTIF_POINTS =
-  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='1.4' fill='%23F7F3EC' fill-opacity='0.08'/%3E%3C/svg%3E\")";
+// Grille de lignes fines, plus large que le motif de points, pour donner de
+// la texture à la moitié de l'écran occupée par la colonne de marque.
+const MOTIF_GRILLE =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M64 0H0V64' fill='none' stroke='%23241E17' stroke-opacity='0.06'/%3E%3C/svg%3E\")";
 
 export function Connexion() {
   const [identifiant, setIdentifiant] = useState("");
@@ -38,11 +39,17 @@ export function Connexion() {
   return (
     <div
       className="relative flex min-h-screen items-center justify-center overflow-hidden bg-fond-page px-4 py-10"
-      style={{ backgroundImage: MOTIF_POINTS, backgroundRepeat: "repeat" }}
+      style={{ backgroundImage: `${MOTIF_GRILLE}, ${MOTIF_POINTS}`, backgroundRepeat: "repeat" }}
     >
       {/* Motifs décoratifs : aplats de bordure seulement, ni ombre ni dégradé. */}
-      <div className="pointer-events-none absolute -left-16 -top-16 h-64 w-64 border border-bordure/60" aria-hidden="true" />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 h-80 w-80 border border-primaire/20" aria-hidden="true" />
+      <div className="pointer-events-none absolute -left-16 -top-16 h-64 w-64 border-2 border-bordure" aria-hidden="true" />
+      <div className="pointer-events-none absolute -left-6 -top-6 h-24 w-24 border border-primaire/40" aria-hidden="true" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 h-80 w-80 border-2 border-primaire/30" aria-hidden="true" />
+      <div className="pointer-events-none absolute -right-10 bottom-16 h-32 w-32 border border-bordure" aria-hidden="true" />
+      <div
+        className="pointer-events-none absolute left-1/2 top-1/2 hidden h-[420px] w-[420px] -translate-x-1/3 -translate-y-1/2 rotate-45 border border-bordure/50 md:block"
+        aria-hidden="true"
+      />
 
       <div className="relative flex w-full max-w-4xl items-stretch justify-center gap-12">
         {/* Colonne de marque : visible à partir de md, purement décorative. */}
