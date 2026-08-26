@@ -1,0 +1,7 @@
+# Ces fichiers sont copiés dans des images Docker Linux : des fins de ligne
+# CRLF (introduites par un clone Windows avec core.autocrlf=true) cassent le
+# shebang et empêchent le conteneur de démarrer ("no such file or directory"
+# alors que le fichier existe bien) — voir docker/entrypoint.sh.
+*.sh text eol=lf
+Dockerfile text eol=lf
+Caddyfile text eol=lf
