@@ -66,7 +66,9 @@ routesMouvements.get("/", exigeAuth(), exigeRole("LECTURE"), gardeChangementMotD
     );
   }
   if (type) conditions.push(Prisma.sql`m."type" = ${type}::"TypeMouvement"`);
-  if (serviceId) conditions.push(Prisma.sql`a."serviceId" = ${serviceId}::uuid`);
+  // Pas de cast ::uuid : Agent.serviceId est un `text` en base (String sans
+  // @db.Uuid dans schema.prisma), pas un uuid natif Postgres — voir agents.ts.
+  if (serviceId) conditions.push(Prisma.sql`a."serviceId" = ${serviceId}`);
   if (dateDebut) conditions.push(Prisma.sql`m."dateEffet" >= ${dateDebut}`);
   if (dateFin) conditions.push(Prisma.sql`m."dateEffet" <= ${dateFin}`);
   if (!inclureAnnules) conditions.push(Prisma.sql`m."annuleLe" IS NULL`);

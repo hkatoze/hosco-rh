@@ -146,6 +146,24 @@ describe("API Agents", () => {
     });
   });
 
+  describe("filtre par service", () => {
+    it("renvoie 200 (pas d'erreur SQL de cast) et ne garde que les agents du service demandé", async () => {
+      const res = await obtenir(app, `/api/agents?serviceId=${serviceId}&q=ZzTestStatut`, cookieLecture);
+      expect(res.status).toBe(200);
+      const corps = await json<ReponseListe>(res);
+      expect(corps.donnees.length).toBeGreaterThan(0);
+      expect(corps.donnees.every((a) => a.service.id === serviceId)).toBe(true);
+    });
+
+    it("un autre service ne renvoie pas les agents de fixture", async () => {
+      const autreService = await prisma.service.findFirstOrThrow({ where: { id: { not: serviceId } } });
+      const res = await obtenir(app, `/api/agents?serviceId=${autreService.id}&q=ZzTestStatut`, cookieLecture);
+      expect(res.status).toBe(200);
+      const corps = await json<ReponseListe>(res);
+      expect(corps.donnees.length).toBe(0);
+    });
+  });
+
   describe("pagination", () => {
     it("taille par défaut 25, page 1 par défaut", async () => {
       const res = await obtenir(app, "/api/agents", cookieLecture);

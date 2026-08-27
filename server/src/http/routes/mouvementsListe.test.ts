@@ -95,6 +95,18 @@ describe("GET /api/mouvements (journal global)", () => {
     expect(corps.donnees[0]!.type).toBe("CONGE");
   });
 
+  it("filtre par service (pas d'erreur SQL de cast)", async () => {
+    const res = await app.request(`/api/mouvements?q=ZzTestMouvementListe&serviceId=${serviceId}`, { headers: { Cookie: cookieLecture } });
+    expect(res.status).toBe(200);
+    const corps = await json<PageMouvements>(res);
+    expect(corps.donnees).toHaveLength(2);
+
+    const autreService = await prisma.service.findFirstOrThrow({ where: { id: { not: serviceId } } });
+    const resAutre = await app.request(`/api/mouvements?q=ZzTestMouvementListe&serviceId=${autreService.id}`, { headers: { Cookie: cookieLecture } });
+    expect(resAutre.status).toBe(200);
+    expect((await json<PageMouvements>(resAutre)).donnees).toHaveLength(0);
+  });
+
   it("exclut les mouvements annulés par défaut, les inclut avec inclureAnnules=true", async () => {
     const conge = await prisma.mouvement.findFirstOrThrow({ where: { agentId, type: "CONGE" } });
     await app.request(`/api/mouvements/${conge.id}/annuler`, {

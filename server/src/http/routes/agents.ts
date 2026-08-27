@@ -80,7 +80,11 @@ function construireConditionsAgents(filtres: z.infer<typeof schemaFiltresAgents>
       Prisma.sql`(f_unaccent(a."nom") ILIKE f_unaccent(${motif}) OR f_unaccent(a."prenom") ILIKE f_unaccent(${motif}) OR a."matricule" ILIKE ${motif})`,
     );
   }
-  if (filtres.serviceId) conditions.push(Prisma.sql`a."serviceId" = ${filtres.serviceId}::uuid`);
+  // Pas de cast ::uuid : Agent.serviceId (comme tous les id) est un `text`
+  // en base (String sans @db.Uuid dans schema.prisma), pas un uuid natif
+  // Postgres — caster le paramètre en uuid donne "operator does not exist:
+  // text = uuid".
+  if (filtres.serviceId) conditions.push(Prisma.sql`a."serviceId" = ${filtres.serviceId}`);
   if (filtres.statut) conditions.push(Prisma.sql`st."statut" = ${filtres.statut}`);
   if (filtres.typeContrat) conditions.push(Prisma.sql`a."typeContrat" = ${filtres.typeContrat}::"TypeContrat"`);
   return conditions;
