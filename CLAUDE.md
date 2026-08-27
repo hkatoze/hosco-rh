@@ -1,10 +1,11 @@
-# ZAKA RH — Logiciel de suivi du personnel
+# Axone — Logiciel de suivi du personnel
 
 ## Contexte
 Application web interne pour le service RH de l'Hôpital Saint Camille
-(HOSCO, Ouagadougou). "HOSCO" désigne l'hôpital client ; "ZAKA RH" est
+(HOSCO, Ouagadougou). "HOSCO" désigne l'hôpital client ; "Axone" est
 le nom du logiciel, affiché dans l'interface (écran de connexion,
-barre supérieure) — les deux ne sont pas interchangeables.
+barre supérieure) — les deux ne sont pas interchangeables. Renommé de
+"ZAKA RH" le 2026-08-27.
 Environ 300 agents, 5 utilisateurs RH simultanés max.
 Hébergée sur un serveur local de l'hôpital, accessible depuis les
 navigateurs des postes du service RH via le réseau local.

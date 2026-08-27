@@ -56,7 +56,7 @@ export function Connexion() {
         <div className="hidden flex-1 flex-col justify-center gap-8 py-8 md:flex">
           <div>
             <img src="/logo.png" alt="" className="mb-6 h-16 w-16" />
-            <p className="text-4xl font-medium leading-tight text-texte-fort">ZAKA RH</p>
+            <p className="text-4xl font-medium leading-tight text-texte-fort">Axone</p>
             <p className="mt-2 max-w-xs text-base text-texte-faible">
               Gestion du personnel de l'Hôpital Saint Camille
             </p>
@@ -76,7 +76,7 @@ export function Connexion() {
         >
           <div className="mb-8 flex flex-col items-center text-center md:hidden">
             <img src="/logo.png" alt="" className="mb-4 h-14 w-14" />
-            <p className="text-xl font-medium text-texte-fort">ZAKA RH</p>
+            <p className="text-xl font-medium text-texte-fort">Axone</p>
           </div>
           <div className="mb-6 hidden md:block">
             <div className="mb-3 h-1 w-10 bg-primaire" aria-hidden="true" />

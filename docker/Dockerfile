@@ -1,4 +1,4 @@
-# Image de production pour ZAKA RH (server + web servis par le même
+# Image de production pour Axone (server + web servis par le même
 # backend Hono — voir CLAUDE.md, une seule origine, pas de CORS).
 #
 # Contexte de build attendu : la racine du dépôt (../ depuis ce fichier),

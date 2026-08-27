@@ -7,7 +7,7 @@ import { demarrerNettoyagePeriodique } from "./tasks/nettoyage";
 const app = creerApp();
 
 serve({ fetch: app.fetch, port: config.port }, (info) => {
-  console.log(`HOSCO Personnel — serveur démarré sur le port ${info.port}`);
+  console.log(`Axone — serveur démarré sur le port ${info.port}`);
 });
 
 demarrerNettoyagePeriodique();

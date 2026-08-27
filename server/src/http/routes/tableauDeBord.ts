@@ -134,7 +134,7 @@ routesTableauDeBord.get("/rapport", exigeAuth(), exigeRole("LECTURE"), gardeChan
   const nomMoisCourant = stats.aujourdhui.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
 
   const classeur = new ExcelJS.Workbook();
-  classeur.creator = "ZAKA RH";
+  classeur.creator = "Axone";
   classeur.created = new Date();
 
   const resume = classeur.addWorksheet("Résumé");

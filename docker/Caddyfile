@@ -1,4 +1,4 @@
-# Reverse proxy pour ZAKA RH sur le réseau local de l'hôpital.
+# Reverse proxy pour Axone sur le réseau local de l'hôpital.
 #
 # HTTP simple, pas de TLS : réseau interne fermé, accès uniquement depuis
 # les postes du service RH via l'IP du serveur — décision du 2026-08-24

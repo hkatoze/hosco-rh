@@ -86,10 +86,20 @@ export function FicheAgent() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Link to="/personnel" className="inline-flex w-fit items-center gap-2 text-sm text-texte-faible hover:text-texte-fort">
-        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-        retour à l'annuaire
-      </Link>
+      <div className="flex items-center justify-between gap-6">
+        <Link to="/personnel" className="inline-flex w-fit items-center gap-2 text-sm text-texte-faible hover:text-texte-fort">
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          retour à l'annuaire
+        </Link>
+        {peutModifier && (
+          <Link to={`/personnel/${agent.id}/modifier`}>
+            <Bouton type="button" variante="secondaire">
+              <Pencil className="h-4 w-4" aria-hidden="true" />
+              modifier
+            </Bouton>
+          </Link>
+        )}
+      </div>
 
       {agent.statut === "CONGE_DEPASSE" && dernierCongeDepasse?.dateFin && (
         <div className="flex flex-wrap items-center justify-between gap-3 border border-primaire bg-primaire/10 px-4 py-3">
@@ -118,56 +128,30 @@ export function FicheAgent() {
       )}
 
       {/* Entête */}
-      <div className="flex flex-wrap items-start justify-between gap-6">
-        <div className="flex items-start gap-4">
-          {agent.photoPath ? (
-            <img src={`/api/agents/${agent.id}/photo`} alt="" className="h-24 w-24 border border-bordure object-cover" />
-          ) : (
-            <div className="flex h-24 w-24 items-center justify-center border border-bordure bg-fond-carte text-2xl font-medium text-texte-faible">
-              {agent.prenom[0]}
-              {agent.nom[0]}
-            </div>
-          )}
-          <div>
-            <h1 className="text-lg font-medium text-texte-fort">
-              {agent.nom}, {agent.prenom}
-            </h1>
-            <p className="text-sm text-texte-faible">
-              {agent.fonction} — {agent.service.nom}
-            </p>
-            <p className="mt-1 text-xs text-texte-faible">
-              Matricule {agent.matricule} — Recruté le {formaterDate(agent.dateRecrutement)} — {agent.typeContrat}
-            </p>
-            <div className="mt-2">
-              <Badge couleur={COULEUR_STATUT[agent.statut]}>{LIBELLE_STATUT[agent.statut]}</Badge>
-            </div>
-          </div>
-        </div>
-
-        {peutModifier && (
-          <div className="flex gap-3">
-            <Link to={`/personnel/${agent.id}/modifier`}>
-              <Bouton type="button" variante="secondaire">
-                <Pencil className="h-4 w-4" aria-hidden="true" />
-                modifier
-              </Bouton>
-            </Link>
-            <Bouton type="button" variante="secondaire" onClick={() => setAjoutDocumentOuvert(true)}>
-              <Plus className="h-4 w-4" aria-hidden="true" />
-              ajouter un document
-            </Bouton>
+      <div className="flex items-start gap-4">
+        {agent.photoPath ? (
+          <img src={`/api/agents/${agent.id}/photo`} alt="" className="h-24 w-24 border border-bordure object-cover" />
+        ) : (
+          <div className="flex h-24 w-24 items-center justify-center border border-bordure bg-fond-carte text-2xl font-medium text-texte-faible">
+            {agent.prenom[0]}
+            {agent.nom[0]}
           </div>
         )}
-      </div>
-
-      {peutSupprimerAgent && (
-        <div className="flex justify-end -mt-2">
-          <Bouton type="button" variante="discret" onClick={() => setConfirmationSuppression(true)}>
-            <Trash2 className="h-4 w-4" aria-hidden="true" />
-            supprimer cet agent
-          </Bouton>
+        <div>
+          <h1 className="text-lg font-medium text-texte-fort">
+            {agent.nom}, {agent.prenom}
+          </h1>
+          <p className="text-sm text-texte-faible">
+            {agent.fonction} — {agent.service.nom}
+          </p>
+          <p className="mt-1 text-xs text-texte-faible">
+            Matricule {agent.matricule} — Recruté le {formaterDate(agent.dateRecrutement)} — {agent.typeContrat}
+          </p>
+          <div className="mt-2">
+            <Badge couleur={COULEUR_STATUT[agent.statut]}>{LIBELLE_STATUT[agent.statut]}</Badge>
+          </div>
         </div>
-      )}
+      </div>
 
       {/* Informations */}
       <div className="border-t border-bordure pt-6">
@@ -185,7 +169,15 @@ export function FicheAgent() {
 
       {/* Documents */}
       <div className="border-t border-bordure pt-6">
-        <h2 className="mb-4 text-sm font-medium text-texte-fort">Documents</h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-sm font-medium text-texte-fort">Documents</h2>
+          {peutModifier && (
+            <Bouton type="button" variante="secondaire" onClick={() => setAjoutDocumentOuvert(true)}>
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              ajouter un document
+            </Bouton>
+          )}
+        </div>
         {agent.documents.length === 0 ? (
           <p className="text-sm text-texte-faible">Aucun document déposé.</p>
         ) : (
@@ -281,6 +273,15 @@ export function FicheAgent() {
           </tbody>
         </Tableau>
       </div>
+
+      {peutSupprimerAgent && (
+        <div className="flex justify-end border-t border-bordure pt-6">
+          <Bouton type="button" variante="primaire" onClick={() => setConfirmationSuppression(true)}>
+            <Trash2 className="h-4 w-4" aria-hidden="true" />
+            supprimer cet agent
+          </Bouton>
+        </div>
+      )}
 
       {documentOuvert && (
         <PanneauDocument document={documentOuvert} agentId={agent.id} peutSupprimer={peutSupprimerDocument} onFermer={() => setDocumentOuvert(null)} />

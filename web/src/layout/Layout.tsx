@@ -44,7 +44,10 @@ export function Layout() {
     <div className="flex h-screen flex-col overflow-hidden">
       <header className="flex h-barreSuperieure shrink-0 items-center gap-3 border-b border-primaire bg-primaire px-4 text-white">
         <img src="/logo.png" alt="" className="h-11 w-11 bg-white p-1" />
-        <span className="text-xl font-medium">ZAKA RH</span>
+        <span className="flex items-baseline gap-2">
+          <span className="text-xl font-medium">Axone</span>
+          <span className="hidden text-sm text-white/70 sm:inline">- Logiciel modulaire de gestion RH</span>
+        </span>
 
         <div className="ml-auto flex items-center gap-4">
           <span className="truncate text-sm" title={utilisateur?.nom}>

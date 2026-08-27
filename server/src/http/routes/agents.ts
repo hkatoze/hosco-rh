@@ -195,7 +195,7 @@ routesAgents.get("/export", exigeAuth(), exigeRole("LECTURE"), gardeChangementMo
   `;
 
   const classeur = new ExcelJS.Workbook();
-  classeur.creator = "ZAKA RH";
+  classeur.creator = "Axone";
   classeur.created = new Date();
   const feuille = classeur.addWorksheet("Personnel");
 
