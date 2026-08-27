@@ -34,7 +34,7 @@ export function FicheAgent() {
   const [documentOuvert, setDocumentOuvert] = useState<DocumentAgent | null>(null);
   const [ajoutDocumentOuvert, setAjoutDocumentOuvert] = useState(false);
   const [mouvementModalOuverte, setMouvementModalOuverte] = useState(false);
-  const [valeursInitialesMouvement, setValeursInitialesMouvement] = useState<{ dateEffet?: string } | undefined>();
+  const [valeursInitialesMouvement, setValeursInitialesMouvement] = useState<{ type?: "RETOUR_CONGE"; dateEffet?: string } | undefined>();
   const [mouvementAAnnuler, setMouvementAAnnuler] = useState<Mouvement | null>(null);
   const [confirmationSuppression, setConfirmationSuppression] = useState(false);
 
@@ -111,13 +111,12 @@ export function FicheAgent() {
             <Bouton
               variante="primaire"
               onClick={() => {
-                // Il n'existe pas de mouvement "retour de congé" (voir CLAUDE.md :
-                // l'agent redevient actif de lui-même à l'échéance) — on ouvre la
-                // saisie avec la date pré-remplie au lendemain de la fin de congé,
-                // pour que l'utilisateur enregistre ce qui s'est réellement passé.
+                // Pré-remplit le type RETOUR_CONGE et la date au lendemain de la
+                // fin de congé — l'utilisateur peut changer le type si ce n'est
+                // pas un simple retour (congé prolongé, démission...).
                 const lendemain = new Date(dernierCongeDepasse.dateFin!);
                 lendemain.setDate(lendemain.getDate() + 1);
-                setValeursInitialesMouvement({ dateEffet: lendemain.toISOString().slice(0, 10) });
+                setValeursInitialesMouvement({ type: "RETOUR_CONGE", dateEffet: lendemain.toISOString().slice(0, 10) });
                 setMouvementModalOuverte(true);
               }}
             >

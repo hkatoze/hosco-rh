@@ -3,7 +3,7 @@ import type { RoleUtilisateur } from "@prisma/client";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { prisma } from "../../db";
 import { creerApp } from "../app";
-import { connexionTest, creerUtilisateurTest, json, poster } from "../testUtils";
+import { connexionTest, creerUtilisateurTest, json, obtenir, poster } from "../testUtils";
 
 const app = creerApp();
 const suffixe = randomUUID().slice(0, 8);
@@ -113,6 +113,33 @@ describe("POST /api/agents/:id/mouvements", () => {
     const res = await poster(app, `/api/agents/${agentId}/mouvements`, { type: "CONGE", dateEffet: "2026-01-10" }, cookieSaisie);
     expect(res.status).toBe(422);
     expect((await json<CorpsErreur>(res)).error).toMatch(/date de fin/);
+  });
+
+  describe("RETOUR_CONGE", () => {
+    it("referme un congé dépassé : l'agent redevient PRESENT et sort des anomalies", async () => {
+      await prisma.mouvement.create({
+        data: { agentId, type: "CONGE", dateEffet: new Date("2026-01-01"), dateFin: new Date("2026-01-10"), saisiParId: idsUtilisateurs[0]! },
+      });
+
+      const ficheAvant = await obtenir(app, `/api/agents/${agentId}`, cookieLecture);
+      expect((await json<{ statut: string }>(ficheAvant)).statut).toBe("CONGE_DEPASSE");
+
+      const res = await poster(app, `/api/agents/${agentId}/mouvements`, { type: "RETOUR_CONGE", dateEffet: "2026-01-11" }, cookieSaisie);
+      expect(res.status).toBe(201);
+
+      const ficheApres = await obtenir(app, `/api/agents/${agentId}`, cookieLecture);
+      expect((await json<{ statut: string }>(ficheApres)).statut).toBe("PRESENT");
+
+      const anomalies = await obtenir(app, "/api/anomalies", cookieLecture);
+      const corps = await json<Array<{ id: string }>>(anomalies);
+      expect(corps.some((a) => a.id === agentId)).toBe(false);
+    });
+
+    it("refuse un RETOUR_CONGE si aucun congé n'est en cours ou dépassé", async () => {
+      const res = await poster(app, `/api/agents/${agentId}/mouvements`, { type: "RETOUR_CONGE", dateEffet: "2026-01-10" }, cookieSaisie);
+      expect(res.status).toBe(422);
+      expect((await json<CorpsErreur>(res)).error).toMatch(/Aucun congé en cours ou dépassé/);
+    });
   });
 
   it("LECTURE ne peut pas ajouter de mouvement (403)", async () => {

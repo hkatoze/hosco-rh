@@ -120,6 +120,42 @@ describe("validerNouveauMouvement — les 5 refus", () => {
     expect(erreur).toBeNull();
   });
 
+  it("refuse un RETOUR_CONGE sans congé en cours ni dépassé", () => {
+    const erreur = validerNouveauMouvement(
+      RECRUTEMENT_SEUL,
+      { type: "RETOUR_CONGE", dateEffet: new Date("2026-06-01"), dateFin: null },
+      RECRUTEMENT_DATE,
+    );
+    expect(erreur?.message).toMatch(/Aucun congé en cours ou dépassé/);
+    expect(erreur?.champ).toBe("type");
+  });
+
+  it("accepte un RETOUR_CONGE quand un congé est en cours", () => {
+    const mouvements = [
+      ...RECRUTEMENT_SEUL,
+      m({ type: "CONGE", dateEffet: new Date("2026-01-01"), dateFin: new Date("2026-12-31") }),
+    ];
+    const erreur = validerNouveauMouvement(
+      mouvements,
+      { type: "RETOUR_CONGE", dateEffet: new Date("2026-06-01"), dateFin: null },
+      RECRUTEMENT_DATE,
+    );
+    expect(erreur).toBeNull();
+  });
+
+  it("accepte un RETOUR_CONGE quand le dernier congé est dépassé (CONGE_DEPASSE)", () => {
+    const mouvements = [
+      ...RECRUTEMENT_SEUL,
+      m({ type: "CONGE", dateEffet: new Date("2024-01-01"), dateFin: new Date("2024-01-15") }),
+    ];
+    const erreur = validerNouveauMouvement(
+      mouvements,
+      { type: "RETOUR_CONGE", dateEffet: new Date("2026-06-01"), dateFin: null },
+      RECRUTEMENT_DATE,
+    );
+    expect(erreur).toBeNull();
+  });
+
   it("accepte un FIN_SUSPENSION quand une suspension est bien en cours", () => {
     const mouvements = [...RECRUTEMENT_SEUL, m({ type: "SUSPENSION", dateEffet: new Date("2026-01-01") })];
     const erreur = validerNouveauMouvement(

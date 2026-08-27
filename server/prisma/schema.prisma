@@ -15,6 +15,7 @@ enum Sexe {
 enum TypeMouvement {
   RECRUTEMENT
   CONGE
+  RETOUR_CONGE
   SUSPENSION
   FIN_SUSPENSION
   DEMISSION

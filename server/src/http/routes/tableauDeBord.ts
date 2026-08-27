@@ -14,6 +14,7 @@ const TYPES_MOUVEMENT_DEPART = new Set(["DEMISSION", "LICENCIEMENT", "RETRAITE",
 const LIBELLE_TYPE_MOUVEMENT: Record<string, string> = {
   RECRUTEMENT: "Recrutement",
   CONGE: "Congé",
+  RETOUR_CONGE: "Retour de congé",
   SUSPENSION: "Suspension",
   FIN_SUSPENSION: "Fin de suspension",
   DEMISSION: "Démission",

@@ -54,6 +54,10 @@ export function validerNouveauMouvement(
     return { champ: "type", message: "Aucune suspension en cours pour cet agent : impossible d'enregistrer une fin de suspension." };
   }
 
+  if (nouveau.type === "RETOUR_CONGE" && statutActuel !== "EN_CONGE" && statutActuel !== "CONGE_DEPASSE") {
+    return { champ: "type", message: "Aucun congé en cours ou dépassé pour cet agent : impossible d'enregistrer un retour de congé." };
+  }
+
   if (nouveau.type === "CONGE" && nouveau.dateFin === null) {
     return { champ: "dateFin", message: "Un congé doit obligatoirement avoir une date de fin." };
   }

@@ -3,6 +3,7 @@ import { z } from "zod";
 export const TYPES_MOUVEMENT = [
   "RECRUTEMENT",
   "CONGE",
+  "RETOUR_CONGE",
   "SUSPENSION",
   "FIN_SUSPENSION",
   "DEMISSION",
@@ -20,6 +21,7 @@ export type TypeMouvement = (typeof TYPES_MOUVEMENT)[number];
  */
 export const TYPES_MOUVEMENT_SAISISSABLES = [
   "CONGE",
+  "RETOUR_CONGE",
   "SUSPENSION",
   "FIN_SUSPENSION",
   "DEMISSION",

@@ -48,9 +48,13 @@ Filtrer des listes d'agents et les exporter en Excel.
     dans la vue — un test compare les deux sur l'ensemble des agents et
     casse en cas de divergence.
 - Règles de mouvement :
-  - `CONGE` : `dateFin` obligatoire à la saisie. Il n'existe pas de
-    mouvement de retour — l'agent redevient actif de lui-même à
-    l'échéance (pas de `RETOUR_CONGE`).
+  - `CONGE` : `dateFin` obligatoire à la saisie. Un mouvement explicite
+    `RETOUR_CONGE` (ajouté le 2026-08-27, revient sur le choix initial de
+    ne pas en avoir) referme le congé — sans lui, le congé dépassé reste
+    signalé en anomalie indéfiniment. Saisissable seulement si l'agent
+    est `EN_CONGE` ou `CONGE_DEPASSE` (voir `validerNouveauMouvement`).
+    Ne compte pas comme une statut particulier : une fois enregistré,
+    l'agent redevient simplement `PRESENT`.
   - `SUSPENSION` : `dateFin` est indicative seulement, elle ne lève
     jamais la suspension automatiquement. Seul un mouvement explicite
     `FIN_SUSPENSION` y met fin.

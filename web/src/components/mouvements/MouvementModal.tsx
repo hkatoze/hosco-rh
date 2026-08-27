@@ -67,7 +67,10 @@ export function MouvementModal({ agentId, ouverte, onFermer, statutActuel, docum
   const estDefinitif = TYPES_DEFINITIFS.includes(type);
   const duree = type === "CONGE" && dateFin ? joursEntre(dateEffet, dateFin) : null;
 
-  const typesProposes = TYPES_MOUVEMENT_SAISISSABLES.filter((t) => t !== "FIN_SUSPENSION" || statutActuel === "SUSPENDU");
+  const statutPermetRetourConge = statutActuel === "EN_CONGE" || statutActuel === "CONGE_DEPASSE";
+  const typesProposes = TYPES_MOUVEMENT_SAISISSABLES.filter(
+    (t) => (t !== "FIN_SUSPENSION" || statutActuel === "SUSPENDU") && (t !== "RETOUR_CONGE" || statutPermetRetourConge),
+  );
 
   const creation = useMutation({
     mutationFn: (valeurs: ValeursFormulaire) =>

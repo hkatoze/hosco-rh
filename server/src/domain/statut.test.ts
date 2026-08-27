@@ -176,6 +176,15 @@ describe("statutAgent — règle 4 : congé dépassé", () => {
     expect(statutAgent(mouvements, REF)).toBe("EN_CONGE");
   });
 
+  it("un RETOUR_CONGE postérieur referme le congé dépassé -> PRESENT", () => {
+    const mouvements = [
+      m({ type: "RECRUTEMENT", dateEffet: new Date("2020-01-01") }),
+      m({ type: "CONGE", dateEffet: new Date("2026-01-01"), dateFin: new Date("2026-02-01") }),
+      m({ type: "RETOUR_CONGE", dateEffet: new Date("2026-02-02") }),
+    ];
+    expect(statutAgent(mouvements, REF)).toBe("PRESENT");
+  });
+
   it("dateFin dépassée mais une suspension a été ouverte ensuite -> SUSPENDU (règle 2 avant 4)", () => {
     const mouvements = [
       m({ type: "RECRUTEMENT", dateEffet: new Date("2020-01-01") }),
